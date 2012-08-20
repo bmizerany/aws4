@@ -24,7 +24,7 @@ var (
 	ErrNoDate = errors.New("X-Amz-Date or Date header not supplied")
 )
 
-var crlf = []byte{'\n'}
+var lf = []byte{'\n'}
 
 // Keys holds a set of Amazon Security Credentials.
 type Keys struct {
@@ -114,7 +114,7 @@ func (s *Service) writeHeader(w io.Writer, r *http.Request) {
 	sort.Strings(a)
 	for i, s := range a {
 		if i > 0 {
-			w.Write(crlf)
+			w.Write(lf)
 		}
 		io.WriteString(w, s)
 	}
@@ -164,27 +164,27 @@ func (s *Service) writeRequest(w io.Writer, r *http.Request) {
 	r.Header.Set("host", r.Host)
 
 	w.Write([]byte(r.Method))
-	w.Write(crlf)
+	w.Write(lf)
 	s.writeURI(w, r)
-	w.Write(crlf)
+	w.Write(lf)
 	s.writeQuery(w, r)
-	w.Write(crlf)
+	w.Write(lf)
 	s.writeHeader(w, r)
-	w.Write(crlf)
-	w.Write(crlf)
+	w.Write(lf)
+	w.Write(lf)
 	s.writeHeaderList(w, r)
-	w.Write(crlf)
+	w.Write(lf)
 	s.writeBody(w, r)
 }
 
 func (s *Service) writeStringToSign(w io.Writer, t time.Time, r *http.Request) {
 	w.Write([]byte("AWS4-HMAC-SHA256"))
-	w.Write(crlf)
+	w.Write(lf)
 	w.Write([]byte(t.Format("20060102T150405Z")))
-	w.Write(crlf)
+	w.Write(lf)
 
 	w.Write([]byte(s.creds(t)))
-	w.Write(crlf)
+	w.Write(lf)
 
 	h := sha256.New()
 	s.writeRequest(h, r)
