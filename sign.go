@@ -16,10 +16,13 @@ import (
 	"sort"
 	"strings"
 	"time"
-	"runtime"
 )
 
-var ErrNoDate = errors.New("X-Amz-Date or Date header not supplied")
+const ISO8601BasicFormat = "20060102T150405Z"
+
+var (
+	ErrNoDate = errors.New("X-Amz-Date or Date header not supplied")
+)
 
 var crlf = []byte{'\n'}
 
@@ -47,26 +50,24 @@ type Service struct {
 }
 
 // Sign signs an HTTP request with the given AWS keys for use on service s.
-func (s *Service) Sign(keys *Keys, r *http.Request) (err error) {
-	defer func() {
-		e := recover()
-		if e != nil {
-			switch v := e.(type) {
-			case nil:
-			case runtime.Error:
-				panic(v)
-			case error:
-				err = v
-			default:
-				panic(v)
-			}
-		}
-	}()
+func (s *Service) Sign(keys *Keys, r *http.Request) error {
+	var t time.Time
 
-	t := getDate(r)
+	date := r.Header.Get("Date")
+	if date == "" {
+		return ErrNoDate
+	}
+
+	t, err := time.Parse(http.TimeFormat, date)
+	if err != nil {
+		return err
+	}
+
+	r.Header.Set("Date", t.Format(ISO8601BasicFormat))
+
 	k := keys.sign(s, t)
 	h := hmac.New(sha256.New, k)
-	s.writeStringToSign(h, r)
+	s.writeStringToSign(h, t, r)
 
 	auth := bytes.NewBufferString("AWS4-HMAC-SHA256 ")
 	auth.Write([]byte("Credential=" + keys.AccessKey + "/" + s.creds(t)))
@@ -78,7 +79,7 @@ func (s *Service) Sign(keys *Keys, r *http.Request) (err error) {
 
 	r.Header.Set("Authorization", auth.String())
 
-	return
+	return nil
 }
 
 func (s *Service) writeQuery(w io.Writer, r *http.Request) {
@@ -176,9 +177,7 @@ func (s *Service) writeRequest(w io.Writer, r *http.Request) {
 	s.writeBody(w, r)
 }
 
-func (s *Service) writeStringToSign(w io.Writer, r *http.Request) {
-	t := getDate(r)
-
+func (s *Service) writeStringToSign(w io.Writer, t time.Time, r *http.Request) {
 	w.Write([]byte("AWS4-HMAC-SHA256"))
 	w.Write(crlf)
 	w.Write([]byte(t.Format("20060102T150405Z")))
@@ -200,19 +199,4 @@ func ghmac(key, data []byte) []byte {
 	h := hmac.New(sha256.New, key)
 	h.Write(data)
 	return h.Sum(nil)
-}
-
-func getDate(r *http.Request) time.Time {
-	date := r.Header.Get("X-Amz-Date")
-	if date == "" {
-		date = r.Header.Get("Date")
-		if date == "" {
-			panic(ErrNoDate)
-		}
-	}
-	t, err := time.Parse(http.TimeFormat, date)
-	if err != nil {
-		panic(err)
-	}
-	return t
 }
