@@ -21,7 +21,7 @@ import (
 const ISO8601BasicFormat = "20060102T150405Z"
 
 var (
-	ErrNoDate = errors.New("X-Amz-Date or Date header not supplied")
+	ErrNoDate = errors.New("Date header not supplied")
 )
 
 var lf = []byte{'\n'}
