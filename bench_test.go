@@ -1,9 +1,9 @@
 package aws4
 
 import (
-	"testing"
 	"bytes"
 	"net/http"
+	"testing"
 	"time"
 )
 
@@ -16,11 +16,11 @@ func BenchmarkSign(b *testing.B) {
 	r.Header.Set("Date", time.Now().UTC().Format(http.TimeFormat))
 
 	s := &Service{
-		Name: "iam",
+		Name:   "iam",
 		Region: "us-east-1",
 	}
 
-	k := &Keys {
+	k := &Keys{
 		AccessKey: "AKIDEXAMPLE",
 		SecretKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
 	}

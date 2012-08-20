@@ -1,11 +1,11 @@
 package aws4
 
 import (
-	"net/http"
-	"strings"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -17,13 +17,13 @@ func ExampleSign() {
 	r.Header.Set("Content-Type", "application/x-amz-json-1.0")
 	r.Header.Set("X-Amz-Target", "DynamoDB_20111205.ListTables")
 
-	tk := &Keys {
+	tk := &Keys{
 		AccessKey: os.Getenv("AWS_ACCESS_KEY"),
 		SecretKey: os.Getenv("AWS_SECRET_KEY"),
 	}
 
 	sv := &Service{
-		Name: "dynamodb",
+		Name:   "dynamodb",
 		Region: "us-east-1",
 	}
 
