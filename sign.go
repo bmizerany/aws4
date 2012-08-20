@@ -18,7 +18,8 @@ import (
 	"time"
 )
 
-const ISO8601BasicFormat = "20060102T150405Z"
+const iSO8601BasicFormat = "20060102T150405Z"
+const iSO8601BasicFormatShort = "20060102"
 
 var (
 	ErrNoDate = errors.New("Date header not supplied")
@@ -33,7 +34,7 @@ type Keys struct {
 }
 
 func (k *Keys) sign(s *Service, t time.Time) []byte {
-	h := ghmac([]byte("AWS4"+k.SecretKey), []byte(t.Format("20060102")))
+	h := ghmac([]byte("AWS4"+k.SecretKey), []byte(t.Format(iSO8601BasicFormatShort)))
 	h = ghmac(h, []byte(s.Region))
 	h = ghmac(h, []byte(s.Name))
 	h = ghmac(h, []byte("aws4_request"))
@@ -63,7 +64,7 @@ func (s *Service) Sign(keys *Keys, r *http.Request) error {
 		return err
 	}
 
-	r.Header.Set("Date", t.Format(ISO8601BasicFormat))
+	r.Header.Set("Date", t.Format(iSO8601BasicFormat))
 
 	k := keys.sign(s, t)
 	h := hmac.New(sha256.New, k)
@@ -180,7 +181,7 @@ func (s *Service) writeRequest(w io.Writer, r *http.Request) {
 func (s *Service) writeStringToSign(w io.Writer, t time.Time, r *http.Request) {
 	w.Write([]byte("AWS4-HMAC-SHA256"))
 	w.Write(lf)
-	w.Write([]byte(t.Format("20060102T150405Z")))
+	w.Write([]byte(t.Format(iSO8601BasicFormat)))
 	w.Write(lf)
 
 	w.Write([]byte(s.creds(t)))
@@ -192,7 +193,7 @@ func (s *Service) writeStringToSign(w io.Writer, t time.Time, r *http.Request) {
 }
 
 func (s *Service) creds(t time.Time) string {
-	return t.Format("20060102") + "/" + s.Region + "/" + s.Name + "/aws4_request"
+	return t.Format(iSO8601BasicFormatShort) + "/" + s.Region + "/" + s.Name + "/aws4_request"
 }
 
 func ghmac(key, data []byte) []byte {
