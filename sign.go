@@ -1,3 +1,5 @@
+// Package aws4 signs HTTP requests as prescribed in
+// http://docs.amazonwebservices.com/general/latest/gr/signature-version-4.html
 package aws4
 
 import (
@@ -21,6 +23,7 @@ var ErrNoDate = errors.New("X-Amz-Date or Date header not supplied")
 
 var crlf = []byte{'\n'}
 
+// Keys holds a set of Amazon Security Credentials.
 type Keys struct {
 	AccessKey string
 	SecretKey string
@@ -34,11 +37,16 @@ func (k *Keys) sign(s *Service, t time.Time) []byte {
 	return h
 }
 
+// Service represents an AWS-compatible service.
 type Service struct {
+	// Name is the name of the service being used (i.e. iam, etc)
 	Name   string
+
+	// Region is the region you want to communicate with the service through. (i.e. us-east-1)
 	Region string
 }
 
+// Sign signs an HTTP request with the given AWS keys for use on service s.
 func (s *Service) Sign(keys *Keys, r *http.Request) (err error) {
 	defer func() {
 		e := recover()
