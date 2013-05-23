@@ -22,12 +22,7 @@ func Example_jSONBody() {
 		SecretKey: os.Getenv("AWS_SECRET_KEY"),
 	}
 
-	sv := &aws4.Service{
-		Name:   "dynamodb",
-		Region: "us-east-1",
-	}
-
-	if err := sv.Sign(tk, r); err != nil {
+	if err := aws4.Sign(tk, r); err != nil {
 		log.Fatal(err)
 	}
 
@@ -55,12 +50,7 @@ func Example_formEncodedBody() {
 		SecretKey: os.Getenv("AWS_SECRET_KEY"),
 	}
 
-	sv := &aws4.Service{
-		Name:   "autoscaling",
-		Region: "us-east-1",
-	}
-
-	if err := sv.Sign(tk, r); err != nil {
+	if err := aws4.Sign(tk, r); err != nil {
 		log.Fatal(err)
 	}
 
