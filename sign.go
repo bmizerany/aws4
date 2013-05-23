@@ -52,18 +52,15 @@ type Service struct {
 
 // Sign signs an HTTP request with the given AWS keys for use on service s.
 func (s *Service) Sign(keys *Keys, r *http.Request) error {
-	var t time.Time
-
 	date := r.Header.Get("Date")
-	if date == "" {
-		return ErrNoDate
+	t := time.Now().UTC()
+	if date != "" {
+		var err error
+		t, err = time.Parse(http.TimeFormat, date)
+		if err != nil {
+			return err
+		}
 	}
-
-	t, err := time.Parse(http.TimeFormat, date)
-	if err != nil {
-		return err
-	}
-
 	r.Header.Set("Date", t.Format(iSO8601BasicFormat))
 
 	k := keys.sign(s, t)

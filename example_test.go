@@ -9,13 +9,11 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"time"
 )
 
 func Example_jSONBody() {
 	data := strings.NewReader("{}")
 	r, _ := http.NewRequest("POST", "https://dynamodb.us-east-1.amazonaws.com/", data)
-	r.Header.Set("Date", time.Now().UTC().Format(http.TimeFormat))
 	r.Header.Set("Content-Type", "application/x-amz-json-1.0")
 	r.Header.Set("X-Amz-Target", "DynamoDB_20111205.ListTables")
 
@@ -45,7 +43,6 @@ func Example_jSONBody() {
 
 func Example_formEncodedBody() {
 	r, _ := http.NewRequest("POST", "https://autoscaling.us-east-1.amazonaws.com/", nil)
-	r.Header.Set("Date", time.Now().UTC().Format(http.TimeFormat))
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	v := make(url.Values)
