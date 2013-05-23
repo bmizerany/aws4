@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,10 +19,6 @@ import (
 
 const iSO8601BasicFormat = "20060102T150405Z"
 const iSO8601BasicFormatShort = "20060102"
-
-var (
-	ErrNoDate = errors.New("Date header not supplied")
-)
 
 var lf = []byte{'\n'}
 
