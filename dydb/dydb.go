@@ -47,6 +47,7 @@ type DB struct {
 	URL string
 }
 
+// Do executes action with and JSON-encoded v as the body. If v is nil, an empty {} is used as the body.
 func (c *DB) Do(action string, v interface{}) Decoder {
 	cl := c.Client
 	if cl == nil {
