@@ -11,9 +11,11 @@ import (
 	"net/http"
 )
 
+// A ResponseError is returned by Decode when an error communicating with
+// DynamoDB occurs.
 type ResponseError struct {
 	StatusCode int
-	Body io.Reader
+	Body       io.Reader
 }
 
 func (e *ResponseError) Error() string {
