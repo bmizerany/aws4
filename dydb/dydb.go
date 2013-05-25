@@ -1,4 +1,4 @@
-// This is an experimental library for using DynamoDB. It uses
+// This is an experimental library for use with DynamoDB. It uses
 // github.com/bmizerany/aws4 to sign requests. See Example for use.
 package dydb
 
