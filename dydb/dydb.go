@@ -86,7 +86,10 @@ func (c *DB) Do(action string, v interface{}) Decoder {
 	}
 
 	if code := resp.StatusCode; code != 200 {
-		return &errorDecoder{err: &ResponseError{StatusCode: code, Body: resp.Body}}
+		// Read the whole body in so that Keep-Alives may be released back to the pool.
+		b := new(bytes.Buffer)
+		io.Copy(b, resp.Body)
+		return &errorDecoder{err: &ResponseError{StatusCode: code, Body: b}}
 	}
 	return json.NewDecoder(resp.Body)
 }
