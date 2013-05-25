@@ -12,12 +12,12 @@ import (
 )
 
 type ResponseError struct {
-	Code int
+	StatusCode int
 	Body io.Reader
 }
 
 func (e *ResponseError) Error() string {
-	return fmt.Sprintf("dydb: response error: %d", e.Code)
+	return fmt.Sprintf("dydb: response error: %d", e.StatusCode)
 }
 
 type errorDecoder struct {
@@ -83,7 +83,7 @@ func (c *DB) Do(action string, v interface{}) Decoder {
 	}
 
 	if code := resp.StatusCode; code != 200 {
-		return &errorDecoder{err: &ResponseError{Code: code, Body: resp.Body}}
+		return &errorDecoder{err: &ResponseError{StatusCode: code, Body: resp.Body}}
 	}
 	return json.NewDecoder(resp.Body)
 }
