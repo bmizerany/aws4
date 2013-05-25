@@ -42,6 +42,7 @@ type DB struct {
 	// If nil, aws4.DefaultClient is used.
 	Client *aws4.Client
 
+	// If empty, DefaultURL is used.
 	URL string
 }
 
