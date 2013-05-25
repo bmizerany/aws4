@@ -20,13 +20,12 @@ func (e *ResponseError) Error() string {
 	return fmt.Sprintf("dydb: response error: %d", e.Code)
 }
 
-type ErrorDecoder struct {
-	Body io.Reader
-	Err  error
+type errorDecoder struct {
+	err error
 }
 
-func (e *ErrorDecoder) Decode(v interface{}) error {
-	return e.Err
+func (e *errorDecoder) Decode(v interface{}) error {
+	return e.err
 }
 
 type Decoder interface {
@@ -68,23 +67,23 @@ func (c *DB) Do(action string, v interface{}) Decoder {
 
 	b, err := json.Marshal(v)
 	if err != nil {
-		return &ErrorDecoder{Err: err}
+		return &errorDecoder{err: err}
 	}
 
 	r, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
 	if err != nil {
-		return &ErrorDecoder{Err: err}
+		return &errorDecoder{err: err}
 	}
 	r.Header.Set("Content-Type", "application/x-amz-json-1.0")
 	r.Header.Set("X-Amz-Target", "DynamoDB_"+ver+"."+action)
 
 	resp, err := cl.Do(r)
 	if err != nil {
-		return &ErrorDecoder{Err: err}
+		return &errorDecoder{err: err}
 	}
 
 	if code := resp.StatusCode; code != 200 {
-		return &ErrorDecoder{Err: &ResponseError{Code: code, Body: resp.Body}}
+		return &errorDecoder{err: &ResponseError{Code: code, Body: resp.Body}}
 	}
 	return json.NewDecoder(resp.Body)
 }
