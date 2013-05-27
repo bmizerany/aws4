@@ -7,19 +7,28 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bmizerany/aws4"
-	"io"
 	"net/http"
+	"strings"
 )
 
 // A ResponseError is returned by Decode when an error communicating with
 // DynamoDB occurs.
 type ResponseError struct {
 	StatusCode int
-	Body       io.Reader
+	Type       string
+	Message    string
 }
 
 func (e *ResponseError) Error() string {
-	return fmt.Sprintf("dydb: response error: %d", e.StatusCode)
+	return fmt.Sprintf("dydb: %d - %s - %q", e.StatusCode, e.TypeName(), e.Message)
+}
+
+func (e *ResponseError) TypeName() string {
+	i := strings.Index(e.Type, "#")
+	if i < 0 {
+		return ""
+	}
+	return e.Type[i+1:]
 }
 
 type errorDecoder struct {
@@ -50,7 +59,8 @@ type DB struct {
 // Exec executes an action where a result is unnecessary. It returns the error
 // if there was one.
 func (db *DB) Exec(action string, v interface{}) error {
-	return db.Query(action, v).Decode(struct{}{})
+	var x struct{}
+	return db.Query(action, v).Decode(&x)
 }
 
 // Query executes an action with a JSON-encoded v as the body.  A nil v is
@@ -96,9 +106,12 @@ func (db *DB) Query(action string, v interface{}) Decoder {
 
 	if code := resp.StatusCode; code != 200 {
 		// Read the whole body in so that Keep-Alives may be released back to the pool.
-		b := new(bytes.Buffer)
-		io.Copy(b, resp.Body)
-		return &errorDecoder{err: &ResponseError{StatusCode: code, Body: b}}
+		var e struct {
+			Message string
+			Type    string `json:"__type"`
+		}
+		json.NewDecoder(resp.Body).Decode(&e)
+		return &errorDecoder{err: &ResponseError{code, e.Type, e.Message}}
 	}
 	return json.NewDecoder(resp.Body)
 }
