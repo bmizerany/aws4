@@ -23,7 +23,7 @@ func Example_createAndListTables() {
 		KeyType       string
 	}
 
-	type CreateTable struct {
+	var posts struct {
 		TableName             string
 		AttributeDefinitions  []AttributeDefinition
 		KeySchema             []KeySchema
@@ -33,7 +33,6 @@ func Example_createAndListTables() {
 		}
 	}
 
-	posts := new(CreateTable)
 	posts.TableName = "Posts"
 	posts.AttributeDefinitions = []AttributeDefinition{{"Slug", "S"}}
 	posts.KeySchema = []KeySchema{{"Slug", "HASH"}}
