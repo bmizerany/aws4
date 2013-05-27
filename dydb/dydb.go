@@ -44,10 +44,14 @@ type Decoder interface {
 	Decode(v interface{}) error
 }
 
-const DefaultURL = "https://dynamodb.us-east-1.amazonaws.com/"
+const (
+	DefaultURL = "https://dynamodb.us-east-1.amazonaws.com/"
+	DefaultVersion = "20120810"
+)
 
 type DB struct {
-	// The version of DynamoDB to use (default is latest)
+	// The version of DynamoDB to use. If empty string, DefaultVersion is
+	// used.
 	Version string
 
 	// If nil, aws4.DefaultClient is used.
@@ -81,7 +85,7 @@ func (db *DB) Query(action string, v interface{}) Decoder {
 
 	ver := db.Version
 	if ver == "" {
-		ver = "20120810"
+		ver = DefaultVersion
 	}
 
 	if v == nil {
