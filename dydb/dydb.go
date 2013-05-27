@@ -19,6 +19,15 @@ type ResponseError struct {
 	Message    string
 }
 
+// IsException returns true if err is a ResponseError and name equals
+// TypeName(), false otherwise.
+func IsException(err error, name string) bool {
+	if e, ok := err.(*ResponseError); ok {
+		return e.TypeName() == name
+	}
+	return false
+}
+
 func (e *ResponseError) Error() string {
 	return fmt.Sprintf("dydb: %d - %s - %q", e.StatusCode, e.TypeName(), e.Message)
 }
@@ -45,7 +54,7 @@ type Decoder interface {
 }
 
 const (
-	DefaultURL = "https://dynamodb.us-east-1.amazonaws.com/"
+	DefaultURL     = "https://dynamodb.us-east-1.amazonaws.com/"
 	DefaultVersion = "20120810"
 )
 

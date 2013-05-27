@@ -40,14 +40,7 @@ func Example_createAndListTables() {
 	posts.ProvisionedThroughput.WriteCapacityUnits = 4
 
 	if err := db.Exec("CreateTable", posts); err != nil {
-		switch e := err.(type) {
-		case *dydb.ResponseError:
-			switch e.TypeName() {
-			case "ResourceInUseException":
-			default:
-				log.Fatal(err)
-			}
-		default:
+		if !dydb.IsException(err, "ResourceInUseException") {
 			log.Fatal(err)
 		}
 	}
