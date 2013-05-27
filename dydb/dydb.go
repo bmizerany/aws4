@@ -23,6 +23,7 @@ func (e *ResponseError) Error() string {
 	return fmt.Sprintf("dydb: %d - %s - %q", e.StatusCode, e.TypeName(), e.Message)
 }
 
+// TypeName returns the error Type without the namespace.
 func (e *ResponseError) TypeName() string {
 	i := strings.Index(e.Type, "#")
 	if i < 0 {
