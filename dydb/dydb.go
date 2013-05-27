@@ -57,8 +57,8 @@ type DB struct {
 	URL string
 }
 
-// Exec executes an action where a result is unnecessary. It returns the error
-// if there was one.
+// Exec is like Query, but discards the response. It returns the error if there
+// was one.
 func (db *DB) Exec(action string, v interface{}) error {
 	var x struct{}
 	return db.Query(action, v).Decode(&x)
