@@ -8,11 +8,11 @@ import (
 	"strings"
 )
 
-var DefaultClient = &Client{Keys: KeysFromEnv()}
+var DefaultClient = &Client{Keys: KeysFromEnvironment()}
 
 // Initializes and returns a Keys using the AWS_ACCESS_KEY and AWS_SECRET_KEY
 // environment variables.
-func KeysFromEnv() *Keys {
+func KeysFromEnvironment() *Keys {
 	return &Keys{
 		AccessKey: os.Getenv("AWS_ACCESS_KEY"),
 		SecretKey: os.Getenv("AWS_SECRET_KEY"),
