@@ -10,7 +10,7 @@ func init() {
 	log.SetFlags(0)
 }
 
-func Example_listTables() {
+func Example_createAndListTables() {
 	db := new(dydb.DB)
 
 	type AttributeDefinition struct {
