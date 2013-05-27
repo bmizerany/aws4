@@ -47,8 +47,14 @@ type DB struct {
 	URL string
 }
 
+// Exec executes an action where a result is unnecessary. It returns an error
+// if there was one.
+func (c *DB) Exec(action string, v interface{}) error {
+	return c.Query(action, v).Decode(struct{}{})
+}
+
 // Do executes action with a JSON-encoded v as the body. If v is nil, an empty {} is used as the body.
-func (c *DB) Do(action string, v interface{}) Decoder {
+func (c *DB) Query(action string, v interface{}) Decoder {
 	cl := c.Client
 	if cl == nil {
 		cl = aws4.DefaultClient
