@@ -19,8 +19,8 @@ type ResponseError struct {
 	Message    string
 }
 
-// IsException returns true if err is a ResponseError and name equals
-// TypeName(), false otherwise.
+// IsException returns true if err is a ResponseError whos TypeName() equals
+// name; false otherwise.
 func IsException(err error, name string) bool {
 	if e, ok := err.(*ResponseError); ok {
 		return e.TypeName() == name
