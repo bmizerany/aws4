@@ -11,7 +11,7 @@ func init() {
 }
 
 func Example_createAndListTables() {
-	db := new(dydb.DB)
+	var db dydb.DB
 
 	type AttributeDefinition struct {
 		AttributeName string
