@@ -47,13 +47,16 @@ type DB struct {
 	URL string
 }
 
-// Exec executes an action where a result is unnecessary. It returns an error
+// Exec executes an action where a result is unnecessary. It returns the error
 // if there was one.
 func (db *DB) Exec(action string, v interface{}) error {
 	return db.Query(action, v).Decode(struct{}{})
 }
 
-// Do executes action with a JSON-encoded v as the body. If v is nil, an empty {} is used as the body.
+// Query executes an action with a JSON-encoded v as the body.  A nil v is
+// represented as the JSON value {}. If an error occurs while communicating
+// with DynamoDB, Query returns a Decoder that returns only the error,
+// otherwise a json.Decoder is returned.
 func (db *DB) Query(action string, v interface{}) Decoder {
 	cl := db.Client
 	if cl == nil {
