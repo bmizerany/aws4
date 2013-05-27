@@ -49,23 +49,23 @@ type DB struct {
 
 // Exec executes an action where a result is unnecessary. It returns an error
 // if there was one.
-func (c *DB) Exec(action string, v interface{}) error {
-	return c.Query(action, v).Decode(struct{}{})
+func (db *DB) Exec(action string, v interface{}) error {
+	return db.Query(action, v).Decode(struct{}{})
 }
 
 // Do executes action with a JSON-encoded v as the body. If v is nil, an empty {} is used as the body.
-func (c *DB) Query(action string, v interface{}) Decoder {
-	cl := c.Client
+func (db *DB) Query(action string, v interface{}) Decoder {
+	cl := db.Client
 	if cl == nil {
 		cl = aws4.DefaultClient
 	}
 
-	url := c.URL
+	url := db.URL
 	if url == "" {
 		url = DefaultURL
 	}
 
-	ver := c.Version
+	ver := db.Version
 	if ver == "" {
 		ver = "20120810"
 	}
