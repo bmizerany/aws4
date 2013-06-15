@@ -36,6 +36,8 @@ func (k *Keys) sign(s *Service, t time.Time) []byte {
 	return h
 }
 
+type Signer func(keys *Keys, r *http.Request) error
+
 // Service represents an AWS-compatible service.
 type Service struct {
 	// Name is the name of the service being used (i.e. iam, etc)
