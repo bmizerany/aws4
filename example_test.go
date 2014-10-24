@@ -38,3 +38,17 @@ func Example_formEncodedBody() {
 	// Output:
 	// 200
 }
+
+func ExampleSignGlacier() {
+	r, _ := http.NewRequest("GET", "https://glacier.us-east-1.amazonaws.com/-/vaults", nil)
+	r.Header.Set("X-Amz-Glacier-Version", "2012-06-01")
+
+	resp, err := aws4.DefaultClient.Do(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(resp.StatusCode)
+	// Output:
+	// 200
+}
